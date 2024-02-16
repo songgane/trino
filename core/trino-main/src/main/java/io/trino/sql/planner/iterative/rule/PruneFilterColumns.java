@@ -14,6 +14,8 @@
 package io.trino.sql.planner.iterative.rule;
 
 import com.google.common.collect.Streams;
+import io.trino.Session;
+import io.trino.SystemSessionProperties;
 import io.trino.sql.planner.Symbol;
 import io.trino.sql.planner.SymbolsExtractor;
 import io.trino.sql.planner.plan.FilterNode;
@@ -32,6 +34,12 @@ public class PruneFilterColumns
     public PruneFilterColumns()
     {
         super(filter());
+    }
+
+    @Override
+    public boolean isEnabled(Session session)
+    {
+        return SystemSessionProperties.isPruneFilterColumns(session);
     }
 
     @Override

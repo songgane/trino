@@ -80,6 +80,12 @@ public class InlineProjections
     }
 
     @Override
+    public boolean isEnabled(Session session)
+    {
+        return Rule.super.isEnabled(session);
+    }
+
+    @Override
     public Result apply(ProjectNode parent, Captures captures, Context context)
     {
         ProjectNode child = captures.get(CHILD);

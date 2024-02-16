@@ -13,6 +13,8 @@
  */
 package io.trino.sql.planner.iterative.rule;
 
+import io.trino.Session;
+import io.trino.SystemSessionProperties;
 import io.trino.sql.planner.Symbol;
 import io.trino.sql.planner.plan.PlanNode;
 import io.trino.sql.planner.plan.ProjectNode;
@@ -28,6 +30,12 @@ public class PruneProjectColumns
     public PruneProjectColumns()
     {
         super(project());
+    }
+
+    @Override
+    public boolean isEnabled(Session session)
+    {
+        return SystemSessionProperties.isPruneProjectColumns(session);
     }
 
     @Override

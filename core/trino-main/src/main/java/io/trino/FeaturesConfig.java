@@ -107,6 +107,11 @@ public class FeaturesConfig
 
     private boolean faultTolerantExecutionExchangeEncryptionEnabled = true;
 
+    private boolean pruneFilterColumns;
+    private boolean pruneTableScanColumns;
+    private boolean pruneProjectColumns;
+    private boolean simplifyExpressions;
+
     public enum DataIntegrityVerification
     {
         NONE,
@@ -500,5 +505,53 @@ public class FeaturesConfig
     public void applyFaultTolerantExecutionDefaults()
     {
         exchangeCompressionEnabled = true;
+    }
+
+    public boolean isPruneTableScanColumns()
+    {
+        return pruneTableScanColumns;
+    }
+
+    @Config("optimizer.prune-table-scan-columns")
+    public FeaturesConfig setPruneTableScanColumns(boolean pruneTableScanColumns)
+    {
+        this.pruneTableScanColumns = pruneTableScanColumns;
+        return this;
+    }
+
+    public boolean isPruneFilterColumns()
+    {
+        return pruneFilterColumns;
+    }
+
+    @Config("optimizer.prune-filter-columns")
+    public FeaturesConfig setPruneFilterColumns(boolean pruneFilterColumns)
+    {
+        this.pruneFilterColumns = pruneFilterColumns;
+        return this;
+    }
+
+    public boolean isPruneProejctColumns()
+    {
+        return pruneProjectColumns;
+    }
+
+    @Config("optimizer.prune-project-columns")
+    public FeaturesConfig setPruneProejctColumns(boolean pruneProjectColumns)
+    {
+        this.pruneProjectColumns = pruneProjectColumns;
+        return this;
+    }
+
+    public boolean isSimplifyExpressions()
+    {
+        return simplifyExpressions;
+    }
+
+    @Config("optimizer.simplify-expressions")
+    public FeaturesConfig setSimplifyExpressions(boolean simplifyExpressions)
+    {
+        this.simplifyExpressions = simplifyExpressions;
+        return this;
     }
 }

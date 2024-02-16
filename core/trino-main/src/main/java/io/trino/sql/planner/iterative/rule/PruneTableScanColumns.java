@@ -16,6 +16,7 @@ package io.trino.sql.planner.iterative.rule;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import io.trino.Session;
+import io.trino.SystemSessionProperties;
 import io.trino.cost.PlanNodeStatsEstimate;
 import io.trino.metadata.Metadata;
 import io.trino.metadata.TableHandle;
@@ -55,6 +56,12 @@ public class PruneTableScanColumns
     {
         super(tableScan());
         this.metadata = requireNonNull(metadata, "metadata is null");
+    }
+
+    @Override
+    public boolean isEnabled(Session session)
+    {
+        return SystemSessionProperties.isPruneTableScanColumns(session);
     }
 
     @Override

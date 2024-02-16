@@ -15,6 +15,7 @@ package io.trino.sql.planner.iterative.rule;
 
 import com.google.common.collect.ImmutableSet;
 import io.trino.Session;
+import io.trino.SystemSessionProperties;
 import io.trino.spi.type.Type;
 import io.trino.sql.PlannerContext;
 import io.trino.sql.planner.ExpressionInterpreter;
@@ -40,19 +41,22 @@ public class SimplifyExpressions
 {
     public static Expression rewrite(Expression expression, Session session, SymbolAllocator symbolAllocator, PlannerContext plannerContext, TypeAnalyzer typeAnalyzer)
     {
-        requireNonNull(plannerContext, "plannerContext is null");
-        requireNonNull(typeAnalyzer, "typeAnalyzer is null");
-        if (expression instanceof SymbolReference) {
-            return expression;
+        if (SystemSessionProperties.isSimplifyExpressions(session)) {
+            requireNonNull(plannerContext, "plannerContext is null");
+            requireNonNull(typeAnalyzer, "typeAnalyzer is null");
+            if (expression instanceof SymbolReference) {
+                return expression;
+            }
+            Map<NodeRef<Expression>, Type> expressionTypes = typeAnalyzer.getTypes(session, symbolAllocator.getTypes(), expression);
+            expression = pushDownNegations(plannerContext.getMetadata(), expression, expressionTypes);
+            expression = extractCommonPredicates(plannerContext.getMetadata(), expression);
+            expression = normalizeOrExpression(expression);
+            expressionTypes = typeAnalyzer.getTypes(session, symbolAllocator.getTypes(), expression);
+            ExpressionInterpreter interpreter = new ExpressionInterpreter(expression, plannerContext, session, expressionTypes);
+            Object optimized = interpreter.optimize(NoOpSymbolResolver.INSTANCE);
+            return new LiteralEncoder(plannerContext).toExpression(session, optimized, expressionTypes.get(NodeRef.of(expression)));
         }
-        Map<NodeRef<Expression>, Type> expressionTypes = typeAnalyzer.getTypes(session, symbolAllocator.getTypes(), expression);
-        expression = pushDownNegations(plannerContext.getMetadata(), expression, expressionTypes);
-        expression = extractCommonPredicates(plannerContext.getMetadata(), expression);
-        expression = normalizeOrExpression(expression);
-        expressionTypes = typeAnalyzer.getTypes(session, symbolAllocator.getTypes(), expression);
-        ExpressionInterpreter interpreter = new ExpressionInterpreter(expression, plannerContext, session, expressionTypes);
-        Object optimized = interpreter.optimize(NoOpSymbolResolver.INSTANCE);
-        return new LiteralEncoder(plannerContext).toExpression(session, optimized, expressionTypes.get(NodeRef.of(expression)));
+        return expression;
     }
 
     public SimplifyExpressions(PlannerContext plannerContext, TypeAnalyzer typeAnalyzer)

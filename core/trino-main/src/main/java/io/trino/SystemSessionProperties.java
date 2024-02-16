@@ -183,6 +183,11 @@ public final class SystemSessionProperties
     public static final String FAULT_TOLERANT_EXECUTION_FORCE_PREFERRED_WRITE_PARTITIONING_ENABLED = "fault_tolerant_execution_force_preferred_write_partitioning_enabled";
     public static final String PAGE_PARTITIONING_BUFFER_POOL_SIZE = "page_partitioning_buffer_pool_size";
 
+    public static final String PRUNE_FILTER_COLUMNS = "prune_filter_columns";
+    public static final String PRUNE_TABLESCAN_COLUMNS = "prune_tablescan_columns";
+    public static final String PRUNE_PROJECT_COLUMNS = "prune_project_columns";
+    public static final String SIMPLIFY_EXPRESSIONS = "simplify_expressions";
+
     private final List<PropertyMetadata<?>> sessionProperties;
 
     public SystemSessionProperties()
@@ -911,7 +916,27 @@ public final class SystemSessionProperties
                 integerProperty(PAGE_PARTITIONING_BUFFER_POOL_SIZE,
                         "Maximum number of free buffers in the per task partitioned page buffer pool. Setting this to zero effectively disables the pool",
                         taskManagerConfig.getPagePartitioningBufferPoolSize(),
-                        true));
+                        true),
+                booleanProperty(
+                        PRUNE_FILTER_COLUMNS,
+                        "todo",
+                        featuresConfig.isPruneFilterColumns(),
+                        false),
+                booleanProperty(
+                        PRUNE_TABLESCAN_COLUMNS,
+                        "todo",
+                        featuresConfig.isPruneTableScanColumns(),
+                        false),
+                booleanProperty(
+                        PRUNE_PROJECT_COLUMNS,
+                        "todo",
+                        featuresConfig.isPruneProejctColumns(),
+                        false),
+                booleanProperty(
+                        SIMPLIFY_EXPRESSIONS,
+                        "todo",
+                        featuresConfig.isSimplifyExpressions(),
+                        false));
     }
 
     @Override
@@ -1623,5 +1648,25 @@ public final class SystemSessionProperties
     public static int getPagePartitioningBufferPoolSize(Session session)
     {
         return session.getSystemProperty(PAGE_PARTITIONING_BUFFER_POOL_SIZE, Integer.class);
+    }
+
+    public static boolean isPruneTableScanColumns(Session session)
+    {
+        return session.getSystemProperty(PRUNE_TABLESCAN_COLUMNS, Boolean.class);
+    }
+
+    public static boolean isPruneFilterColumns(Session session)
+    {
+        return session.getSystemProperty(PRUNE_FILTER_COLUMNS, Boolean.class);
+    }
+
+    public static boolean isPruneProjectColumns(Session session)
+    {
+        return session.getSystemProperty(PRUNE_PROJECT_COLUMNS, Boolean.class);
+    }
+
+    public static boolean isSimplifyExpressions(Session session)
+    {
+        return session.getSystemProperty(SIMPLIFY_EXPRESSIONS, Boolean.class);
     }
 }

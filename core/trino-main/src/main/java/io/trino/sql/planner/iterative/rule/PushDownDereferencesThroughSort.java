@@ -15,6 +15,7 @@ package io.trino.sql.planner.iterative.rule;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import io.trino.Session;
 import io.trino.matching.Capture;
 import io.trino.matching.Captures;
 import io.trino.matching.Pattern;
@@ -68,6 +69,12 @@ public class PushDownDereferencesThroughSort
     public PushDownDereferencesThroughSort(TypeAnalyzer typeAnalyzer)
     {
         this.typeAnalyzer = requireNonNull(typeAnalyzer, "typeAnalyzer is null");
+    }
+
+    @Override
+    public boolean isEnabled(Session session)
+    {
+        return Rule.super.isEnabled(session);
     }
 
     @Override
